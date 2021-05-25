@@ -38,6 +38,16 @@ provider:
 
 
 functions:
+  test_auth:
+    handler: app/handler.endpoint_test_auth
+    events:
+    — http:
+    path: test_auth
+    method: get
+    authorizer:
+      type: COGNITO_USER_POOLS
+      authorizerId:
+      Ref: ApiGatewayAuthorizer
   s3Event:
     handler: app/handler.s3Event
     events:
