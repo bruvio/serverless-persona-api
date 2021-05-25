@@ -63,6 +63,10 @@ functions:
           path: people
           method: get
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
 
   get:
     handler: app/handler.get
@@ -71,6 +75,10 @@ functions:
           path: username/{username}
           method: get
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
   delete:
     handler: app/handler.delete
     events:
@@ -78,6 +86,10 @@ functions:
           path: delete/{username}
           method: delete
           cors: true
+          authorizer:
+            type: COGNITO_USER_POOLS
+            authorizerId:
+              Ref: ApiGatewayAuthorizer
 
 plugins:
   - serverless-python-requirements
