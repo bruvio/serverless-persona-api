@@ -1,0 +1,106 @@
+
+service: python-s3-unzip
+# frameworkVersion: ">=1.1.0 <2.0.0"
+
+
+provider:
+  name: aws
+  runtime: python3.8
+  region: us-east-1
+  profile: masterbruvio
+  environment:
+    BUCKET: ${self:custom.bucketname}
+    DYNAMODB_TABLE: ${self:custom.personatable}
+  variablesResolutionMode: 20210326
+  lambdaHashingVersion: 20201221
+  timeout: 60
+  memorySize: 512
+  deploymentBucket:
+    name: bruvio-lambda-deployment-bucket
+    serverSideEncryption: AES256
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:*"
+          Resource: "*"
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:BatchWriteItem
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+custom:
+  bucketname: persona-api-data-${self:provider.stage}
+  personatable: persona-api-${self:provider.stage}
+  pythonRequirements:
+   dockerizePip: true
+  deploymentBucket:
+    versioning: true
+    accelerate: true
+    blockPublicAccess: true
+    tags:
+      - Key: Environment
+        Value: dev
+functions:
+  s3Event:
+    handler: app/handler.s3Event
+    events:
+      - s3:
+          bucket: ${self:custom.bucketname}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .zip
+  list:
+    handler: app/handler.list
+    events:
+      - http:
+          path: people
+          method: get
+          cors: true
+
+  get:
+    handler: app/handler.get
+    events:
+      - http:
+          path: username/{username}
+          method: get
+          cors: true
+  delete:
+    handler: app/handler.delete
+    events:
+      - http:
+          path: delete/{username}
+          method: delete
+          cors: true
+
+plugins:
+  - serverless-python-requirements
+  - serverless-external-s3-event
+  - serverless-plugin-existing-s3
+  - serverless-deployment-bucket
+
+resources:
+  Resources:
+    PersonaDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      # DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: username
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: username
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
