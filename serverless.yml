@@ -1,5 +1,5 @@
 
-service: python-s3-unzip
+service: persona-api
 # frameworkVersion: ">=1.1.0 <2.0.0"
 
 
