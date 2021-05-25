@@ -36,18 +36,7 @@ provider:
             - dynamodb:BatchWriteItem
           Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
 
-custom:
-  bucketname: persona-api-data-${self:provider.stage}
-  personatable: persona-api-${self:provider.stage}
-  pythonRequirements:
-   dockerizePip: true
-  deploymentBucket:
-    versioning: true
-    accelerate: true
-    blockPublicAccess: true
-    tags:
-      - Key: Environment
-        Value: dev
+
 functions:
   s3Event:
     handler: app/handler.s3Event
@@ -104,3 +93,51 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.DYNAMODB_TABLE}
+    CognitoUserPool:
+      Type: "AWS::Cognito::UserPool"
+      Properties:
+        MfaConfiguration: OFF
+        UserPoolName: ${self:custom.userpool}
+        UsernameAttributes:
+          - email
+        Policies:
+          PasswordPolicy:
+            MinimumLength: 6
+            RequireLowercase: False
+            RequireNumbers: True
+            RequireSymbols: False
+            RequireUppercase: True
+    CognitoUserPoolClient:
+      Type: "AWS::Cognito::UserPoolClient"
+      Properties:
+        ClientName: ${self:custom.userpoolclient}
+        GenerateSecret: False
+        UserPoolId:
+          Ref: CognitoUserPool
+    ApiGatewayAuthorizer:
+      DependsOn:
+        - ApiGatewayRestApi
+      Type: AWS::ApiGateway::Authorizer
+      Properties:
+        Name: cognito-authorizer
+        IdentitySource: method.request.header.Authorization
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        Type: COGNITO_USER_POOLS
+        ProviderARNs:
+          - Fn::GetAtt: [CognitoUserPool, Arn]
+
+custom:
+  bucketname: persona-api-data-${self:provider.stage}
+  personatable: persona-api-${self:provider.stage}
+  userpoolclient: persona-api-${self:provider.stage}
+  userpool: persona-api-${self:provider.stage}
+  pythonRequirements:
+   dockerizePip: true
+  deploymentBucket:
+    versioning: true
+    accelerate: true
+    blockPublicAccess: true
+    tags:
+      - Key: Environment
+        Value: dev
