@@ -1,0 +1,8 @@
+{
+	"deployment": {
+		"region": "us-east-1",
+		"serviceName": "persona-api",
+		"userPoolName": "userpool-persona-api",
+		"clientName": "client-persona-api"
+	}
+}

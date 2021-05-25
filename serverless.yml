@@ -62,7 +62,7 @@ functions:
       - http:
           path: people
           method: get
-          cors: true
+          # cors: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -74,7 +74,7 @@ functions:
       - http:
           path: username/{username}
           method: get
-          cors: true
+          # cors: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -85,7 +85,7 @@ functions:
       - http:
           path: delete/{username}
           method: delete
-          cors: true
+          # cors: true
           authorizer:
             type: COGNITO_USER_POOLS
             authorizerId:
@@ -96,6 +96,8 @@ plugins:
   - serverless-external-s3-event
   - serverless-plugin-existing-s3
   - serverless-deployment-bucket
+  - serverless-aws-documentation
+  - serverless-stack-output
 
 resources:
   Resources:
@@ -163,3 +165,49 @@ custom:
     tags:
       - Key: Environment
         Value: dev
+  output:
+    handler: output.handler
+    file: .build/stack.yaml
+  documentation:
+    api:
+      info:
+        version: "0" # see note above about this being ignored
+        title: "persona-api" # see note above about this being ignored
+        description: "The Persona API is a fake RESTful API that delivers made up data on a few endpoints."
+        # termsOfService: "http://www.example.com/terms-of-service"
+        contact:
+          name: "bruno viola"
+          # url: "http://www.example.com/me"
+          email: "bruno.viola@pm.me"
+        license:
+          name: "MIT"
+          # url: "http://www.example.com/licensing"
+      tags:
+        -
+          name: "Data Creation"
+          description: "May 2021"
+
+    authorizers:
+      -
+        name: "AWS Cognito"
+        # description: "This is an error"
+    resources:
+      -
+        path: "people/"
+        description: "This is the description for people endpoint"
+      -
+        path: "delete/{username}"
+        description: "This is the description for delete endpoint"
+      -
+        path: "get/{username}"
+        description: "This is the description for get endpoint"
+
+# outputs:
+#   UserPoolId:
+#     Value: !Ref CognitoUserPool
+#     Export:
+#       Name: "CognitoUserPool::Id"
+#   UserPoolClientId:
+#     Value: !Ref CognitoUserPoolClient
+#     Export:
+#       Name: "CognitoUserPoolClient::Id"
