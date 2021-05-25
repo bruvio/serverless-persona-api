@@ -5,8 +5,8 @@ import logging
 import json
 from botocore.exceptions import ClientError
 import decimal
-from utils import utility_dynamo
-from utils import config
+from app.utils import utility_dynamo
+from app.utils import config
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
