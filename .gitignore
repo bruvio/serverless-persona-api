@@ -23,3 +23,15 @@ app/tests/__pycache__/
 node_modules/
 # Serverless directories
 .serverless
+
+
+
+# Custom
+venv/
+node_modules/
+.idea/
+localstack-temp/
+localstacktemp/
+*.pyc
+.DS_Store
+*.pytest_cache/
