@@ -25,14 +25,20 @@ def user():
 @pytest.fixture(scope="package")
 def ddb_resource():
     yield boto3.resource(
-        "dynamodb", endpoint_url=config.local_url, region_name=config.region_name
+        "dynamodb",
+        endpoint_url=config.local_url,
+        region_name=config.region_name,
+        verify=False,
     )
 
 
 @pytest.fixture(scope="package")
 def ddb_client():
     yield boto3.client(
-        "dynamodb", endpoint_url=config.local_url, region_name=config.region_name
+        "dynamodb",
+        endpoint_url=config.local_url,
+        region_name=config.region_name,
+        verify=False,
     )
 
 
@@ -57,6 +63,7 @@ def lambda_client():
         endpoint_url=config.local_url,
         region_name=config.region_name,
         config=botocore.config.Config(retries={"max_attempts": 0}),
+        verify=False,
     )
 
 

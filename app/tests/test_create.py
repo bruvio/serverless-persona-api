@@ -38,6 +38,6 @@ def test_createTable(event, context, ddb_tbl):
     logging.info("record created: " + str(item))
     # create a response
 
-    # print(ddb_tbl.scan(Select="COUNT")["Count"])
+    print(ddb_tbl.scan(Select="COUNT")["Count"])
     assert ddb_tbl.scan(Select="COUNT")["Count"] - old_cnt == 0
     logger.info("create test success")

@@ -13,10 +13,8 @@ class DecimalEncoder(json.JSONEncoder):
 
 
 def get_ddb_resource(context):
-    # if context.aws_request_id == 'test':
-    # return boto3.resource(
-    #     'dynamodb',
-    #     endpoint_url=config.local_url,
-    #     region_name=config.region_name
-    # )
+    if context.aws_request_id == "test":
+        return boto3.resource(
+            "dynamodb", endpoint_url=config.local_url, region_name=config.region_name
+        )
     return boto3.resource("dynamodb")
