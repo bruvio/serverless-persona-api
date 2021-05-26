@@ -117,23 +117,17 @@ def unzip(bucket, key):
 def get(event, context):
     logger.info(f"Incoming request is: {event}")
     # Set the default error response
-    # response = {"statusCode": 500, "body": "An error occured while getting username."}
     response = generate_response(500, "An error occured while getting username.")
     ddb_resource = helpers.get_ddb_resource(context)
     table = ddb_resource.Table(config.ddb_tbl_name)
     data_id = event["pathParameters"]["username"]
 
-    data_query = table.get_item(Key={"username": {"S": data_id}})
+    data_query = table.get_item(Key={"username": data_id})
 
     if "Item" in data_query:
         username = data_query["Item"]
         logger.info(f"username is: {username}")
-        response = {
-            "statusCode": 200,
-            "body": json.dumps(utility_dynamo.to_dict(username)),
-        }
         response = generate_response(200, json.dumps(utility_dynamo.to_dict(username)))
-    # response = {"statusCode": 200, "body": json.dumps(users)}
 
     return response
 
@@ -162,7 +156,7 @@ def delete(event, context):
     table = ddb_resource.Table(config.ddb_tbl_name)
     res = table.delete_item(Key={"username": user_id})
 
-    # If deletion is successful for VIN
+    # If deletion is successful for username
     if res["ResponseMetadata"]["HTTPStatusCode"] == 200:
         response = {
             "statusCode": 204,
