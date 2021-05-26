@@ -28,11 +28,15 @@ def test_createTable(event, context, ddb_tbl):
     logger.info(config.ddb_tbl_name)
     table = ddb_resource.Table(config.ddb_tbl_name)
 
-    item = {
-        "username": data["username"],
-        "createdAt": date,
-        "updatedAt": timestamp,
-    }
+    item = dict()
+    item["username"] = data["username"]
+    item["createdAt"] = date
+    item["updatedAt"] = timestamp
+    # item = {
+    #     "username": data["username"],
+    #     "createdAt": date,
+    #     "updatedAt": timestamp,
+    # }
 
     table.put_item(Item=item)
     logging.info("record created: " + str(item))

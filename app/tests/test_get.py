@@ -17,8 +17,7 @@ logger.setLevel(logging.INFO)
 # @mock_dynamodb2
 @pytest.fixture(scope="function")
 @pytest.mark.usefixtures("user")
-def putUsername(user):
-    context = None
+def putUsername(user, context):
     ddb_resource = get_ddb_resource(context)
     table = ddb_resource.Table(config.ddb_tbl_name)
 
@@ -31,7 +30,7 @@ def putUsername(user):
 # @mock_dynamodb2
 @pytest.mark.usefixtures("putUsername")
 @pytest.mark.usefixtures("event")
-def test_getUsername(event, context=None):
+def test_getUsername(event, context):
     logger.info("received this event \n {}".format(event))
     response = handler.get(event, context)
     # print(response)

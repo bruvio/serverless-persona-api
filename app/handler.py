@@ -6,7 +6,7 @@ import json
 from botocore.exceptions import ClientError
 import decimal
 from app.utils import utility_dynamo
-from app.utils import config
+from app.utils import config, helpers
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -119,12 +119,11 @@ def get(event, context):
     # Set the default error response
     # response = {"statusCode": 500, "body": "An error occured while getting username."}
     response = generate_response(500, "An error occured while getting username.")
-
+    ddb_resource = helpers.get_ddb_resource(context)
+    table = ddb_resource.Table(config.ddb_tbl_name)
     data_id = event["pathParameters"]["username"]
 
-    data_query = dynamodbClient.get_item(
-        TableName=table_name, Key={"username": {"S": data_id}}
-    )
+    data_query = table.get_item(Key={"username": {"S": data_id}})
 
     if "Item" in data_query:
         username = data_query["Item"]
@@ -145,16 +144,10 @@ def list(event, context):
         "statusCode": 500,
         "body": "An error occured while getting all profiles.",
     }
-
-    scan_result = dynamodbClient.scan(TableName=table_name)["Items"]
-
-    users = []
-
-    for user in scan_result:
-        users.append(utility_dynamo.to_dict(user))
-    response = generate_response(200, json.dumps(users))
-    # response = {"statusCode": 200, "body": json.dumps(users)}
-
+    ddb_resource = helpers.get_ddb_resource(context)
+    table = ddb_resource.Table(config.ddb_tbl_name)
+    scan_result = table.scan()
+    response = generate_response(200, scan_result["Items"])
     return response
 
 
@@ -162,15 +155,12 @@ def delete(event, context):
     logger.info(f"Incoming request is: {event}")
 
     user_id = event["pathParameters"]["username"]
+    print(user_id)
     # Set the default error response
-    response = {
-        "statusCode": 500,
-        "body": f"An error occured while deleting username {user_id}",
-    }
-
-    res = dynamodbClient.delete_item(
-        TableName=table_name, Key={"username": {"S": user_id}}
-    )
+    response = generate_response(500, "An error occured while getting username.")
+    ddb_resource = helpers.get_ddb_resource(context)
+    table = ddb_resource.Table(config.ddb_tbl_name)
+    res = table.delete_item(Key={"username": user_id})
 
     # If deletion is successful for VIN
     if res["ResponseMetadata"]["HTTPStatusCode"] == 200:

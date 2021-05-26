@@ -22,7 +22,7 @@ def event():
 
 # @mock_dynamodb2
 @pytest.mark.usefixtures("event")
-def test_List(event, context=None):
+def test_List(event, context):
     logger.info("received this event \n {}".format(event))
     response = handler.list(event, context)
 
