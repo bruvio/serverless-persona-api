@@ -150,7 +150,22 @@ resources:
         Type: COGNITO_USER_POOLS
         ProviderARNs:
           - Fn::GetAtt: [CognitoUserPool, Arn]
-
+  Outputs:
+    CognitoPoolId:
+      Description: 'CognitoPool id'
+      Value: !Ref CognitoUserPool
+      Export:
+        Name: ${self:service}-${self:provider.stage}-CognitoUserPoolId
+    CognitoPoolClientId:
+      Description: 'CognitoUserPoolClient id'
+      Value: !Ref CognitoUserPoolClient
+      Export:
+        Name: ${self:service}-${self:provider.stage}-CognitoUserPoolClientId
+    PersonaDynamoDbTableArn:
+      Description: 'PersonaDynamoDbTable Arn'
+      Value: !Ref PersonaDynamoDbTable
+      Export:
+        Name: ${self:service}-${self:provider.stage}-PersonaDynamoDbTableId
 custom:
   bucketname: persona-api-data-${self:provider.stage}
   personatable: persona-api-${self:provider.stage}
@@ -201,13 +216,3 @@ custom:
       -
         path: "get/{username}"
         description: "This is the description for get endpoint"
-
-# outputs:
-#   UserPoolId:
-#     Value: !Ref CognitoUserPool
-#     Export:
-#       Name: "CognitoUserPool::Id"
-#   UserPoolClientId:
-#     Value: !Ref CognitoUserPoolClient
-#     Export:
-#       Name: "CognitoUserPoolClient::Id"
