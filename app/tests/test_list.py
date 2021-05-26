@@ -1,7 +1,8 @@
 import pytest
 import os
 import sys
-from moto import mock_dynamodb2
+
+# from moto import mock_dynamodb2
 import logging
 
 sys.path.append(os.path.abspath(os.path.dirname("__file__")))
@@ -19,7 +20,7 @@ def event():
     return event
 
 
-@mock_dynamodb2
+# @mock_dynamodb2
 @pytest.mark.usefixtures("event")
 def test_List(event, context=None):
     logger.info("received this event \n {}".format(event))

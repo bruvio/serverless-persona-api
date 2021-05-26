@@ -2,7 +2,8 @@ import pytest
 import os
 import sys
 import logging
-from moto import mock_dynamodb2
+
+# from moto import mock_dynamodb2
 
 sys.path.append(os.path.abspath(os.path.dirname("__file__")))
 import handler
@@ -13,7 +14,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-@mock_dynamodb2
+# @mock_dynamodb2
 @pytest.fixture(scope="function")
 @pytest.mark.usefixtures("user")
 def putUsername(user):
@@ -21,19 +22,13 @@ def putUsername(user):
     ddb_resource = get_ddb_resource(context)
     table = ddb_resource.Table(config.ddb_tbl_name)
 
-    item = {
-        "username": user,
-        # 'text': data['text'],
-        # 'checked': False,
-        # 'createdAt': date,
-        # 'updatedAt': timestamp,
-    }
+    item = {"username": user}
 
     table.put_item(Item=item)
     logging.info("record created: " + str(item))
 
 
-@mock_dynamodb2
+# @mock_dynamodb2
 @pytest.mark.usefixtures("putUsername")
 @pytest.mark.usefixtures("event")
 def test_getUsername(event, context=None):

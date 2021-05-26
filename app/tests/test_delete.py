@@ -2,7 +2,8 @@ import pytest
 import os
 import sys
 import logging
-from moto import mock_dynamodb2
+
+# from moto import mock_dynamodb2
 
 sys.path.append(os.path.abspath(os.path.dirname("__file__")))
 import handler
@@ -13,7 +14,7 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
 
-@mock_dynamodb2
+# @mock_dynamodb2
 @pytest.fixture(scope="function")
 @pytest.mark.usefixtures("user")
 def putUsername(user):

@@ -117,7 +117,9 @@ def unzip(bucket, key):
 def get(event, context):
     logger.info(f"Incoming request is: {event}")
     # Set the default error response
-    response = {"statusCode": 500, "body": "An error occured while getting username."}
+    # response = {"statusCode": 500, "body": "An error occured while getting username."}
+    response = generate_response(500, "An error occured while getting username.")
+
     data_id = event["pathParameters"]["username"]
 
     data_query = dynamodbClient.get_item(
@@ -131,6 +133,8 @@ def get(event, context):
             "statusCode": 200,
             "body": json.dumps(utility_dynamo.to_dict(username)),
         }
+        response = generate_response(200, json.dumps(utility_dynamo.to_dict(username)))
+    # response = {"statusCode": 200, "body": json.dumps(users)}
 
     return response
 
@@ -148,8 +152,8 @@ def list(event, context):
 
     for user in scan_result:
         users.append(utility_dynamo.to_dict(user))
-
-    response = {"statusCode": 200, "body": json.dumps(users)}
+    response = generate_response(200, json.dumps(users))
+    # response = {"statusCode": 200, "body": json.dumps(users)}
 
     return response
 

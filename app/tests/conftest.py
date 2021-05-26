@@ -1,23 +1,25 @@
 import os
 import sys
 import pytest
+import boto3
+import botocore.config
 
 sys.path.append(os.path.abspath(os.path.dirname("__file__")))
+from utils import config
+
 tbl = config.ddb_tbl_name
 
 
+@pytest.mark.usefixtures("user")
 @pytest.fixture(scope="session")
-def event():
-    event = {"pathParameters": {"username": "bruvio"}}
+def event(user):
+    event = {"pathParameters": {"username": user}}
     return event
 
 
 @pytest.fixture(scope="session")
 def user():
     return "bruvio"
-
-
-tbl = config.ddb_tbl_name
 
 
 @pytest.fixture(scope="package")
