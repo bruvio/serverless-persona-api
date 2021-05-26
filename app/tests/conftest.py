@@ -71,7 +71,7 @@ def context():
         "function_name": "TestCloudFormationStackName-TestLambdaFunctionResourceName--ABC-1234F",
         "function_version": "$LATEST",
         "identity": "<__main__.CognitoIdentity object at 0x1fb81abc00>",
-        "memory_limit_in_mb": "128",
+        "memory_limit_in_mb": "512",
     }
 
     class Struct:
