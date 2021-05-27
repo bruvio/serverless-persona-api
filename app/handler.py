@@ -3,6 +3,7 @@ import boto3
 import zipfile
 import logging
 import json
+import decimal
 from botocore.exceptions import ClientError
 import decimal
 from app.utils import utility_dynamo
@@ -11,7 +12,7 @@ from app.utils import config, helpers
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-# s3 = boto3.client("s3", use_ssl=False)
+s3 = boto3.client("s3", use_ssl=False)
 
 # table_name = config.ddb_tbl_name
 # bucketname = config.ddb_bucket_name
@@ -65,10 +66,8 @@ def fill_table(table, table_data):
 
 
 def populate():
-    s3 = boto3.client("s3", use_ssl=False)
 
     table_name = config.ddb_tbl_name
-    bucketname = config.ddb_bucket_name
 
     # dynamodbClient = boto3.client("dynamodb")
     logger.debug("table is {}".format(table_name))
@@ -98,7 +97,7 @@ def populate():
 
 
 def unzip(bucket, key):
-
+    bucketname = config.ddb_bucket_name
     filename_json = "fake_profiles.json"  # replace with your object key
     try:
         s3.download_file(bucket, key, "/tmp/" + key)
@@ -173,7 +172,7 @@ def delete(event, context):
     logger.info(f"Incoming request is: {event}")
 
     user_id = event["pathParameters"]["username"]
-    print(user_id)
+    # print(user_id)
     # Set the default error response
     response = generate_response(500, "An error occured while getting username.")
     ddb_resource = helpers.get_ddb_resource(context)
@@ -185,26 +184,17 @@ def delete(event, context):
         response = {
             "statusCode": 204,
         }
+        response = {
+            "statusCode": 204,
+            "body": json.dumps("True"),
+        }
     return response
-
-
-import decimal
-
-
-class DecimalEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, decimal.Decimal):
-            if o % 1 > 0:
-                return float(o)
-        else:
-            return int(o)
-        return super(DecimalEncoder, self).default(o)
 
 
 def generate_response(status, body, headers={}):
     return {
         "statusCode": status,
-        "body": json.dumps(body, indent=4, cls=DecimalEncoder),
+        "body": json.dumps(body, indent=4, cls=helpers.DecimalEncoder),
         "headers": headers,
     }
 
