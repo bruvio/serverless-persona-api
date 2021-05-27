@@ -166,6 +166,11 @@ resources:
       Value: !Ref PersonaDynamoDbTable
       Export:
         Name: ${self:service}-${self:provider.stage}-PersonaDynamoDbTableId
+    DataIngestionS3Bucket:
+      Description: 'S3 bucket used to upload data to ingest'
+      Value:  ${self:custom.bucketname}
+      Export:
+        Name: DataIngestionS3Bucket
 custom:
   bucketname: persona-api-data-${self:provider.stage}
   personatable: persona-api-${self:provider.stage}
