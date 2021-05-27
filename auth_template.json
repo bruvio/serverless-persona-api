@@ -1,6 +1,6 @@
 {
-"UserPoolId": "us-east-1_Bi8OH7iCT",
-"ClientId": "4bld268vfouhqfn2ljo2h0tup2",
+"UserPoolId": "${CognitoUserPoolId}",
+"ClientId": "${CognitoPoolClientId}",
 "AuthFlow": "ADMIN_NO_SRP_AUTH",
 "AuthParameters": {
 "USERNAME": "bruno.viola@protonmail.com",

@@ -187,3 +187,35 @@ def generate_response(status, body, headers={}):
 
 def endpoint_test_auth(event, context):
     return generate_response(200, {"bruvio": True})
+
+
+def sign_up(app_client_id, username, password):
+    client = boto3.client("cognito-idp")
+
+    try:
+        sign_up_response = client.sign_up(
+            ClientId=app_client_id, Username=username, Password=password
+        )
+        print(sign_up_response)
+
+        confirm_sign_up_response = client.admin_confirm_sign_up(
+            UserPoolId=deadpool["user_pool_id"], Username=deadpool["username"]
+        )
+        print(confirm_sign_up_response)
+
+    except ClientError as e:
+        print(e)
+
+
+def init_auth(app_client_id, username, password):
+    client = boto3.client("cognito-idp")
+
+    response = client.initiate_auth(
+        AuthFlow="USER_PASSWORD_AUTH",
+        AuthParameters={"USERNAME": username, "PASSWORD": password},
+        ClientId=app_client_id,
+    )
+
+    print(response["AuthenticationResult"]["AccessToken"])
+    print(response["AuthenticationResult"]["IdToken"])
+    print(response["AuthenticationResult"]["RefreshToken"])
