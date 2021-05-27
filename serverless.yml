@@ -72,7 +72,7 @@ functions:
     handler: app/handler.get
     events:
       - http:
-          path: username/{username}
+          path: search/{username}
           method: get
           # cors: true
           authorizer:
@@ -196,14 +196,11 @@ custom:
         version: "0" # see note above about this being ignored
         title: "persona-api" # see note above about this being ignored
         description: "The Persona API is a fake RESTful API that delivers made up data on a few endpoints."
-        # termsOfService: "http://www.example.com/terms-of-service"
         contact:
-          name: "bruno viola"
-          # url: "http://www.example.com/me"
-          email: "bruno.viola@pm.me"
+          name: "bruvio"
+
         license:
           name: "MIT"
-          # url: "http://www.example.com/licensing"
       tags:
         -
           name: "Data Creation"
@@ -212,7 +209,6 @@ custom:
     authorizers:
       -
         name: "AWS Cognito"
-        # description: "This is an error"
     resources:
       -
         path: "people/"
