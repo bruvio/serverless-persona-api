@@ -11,15 +11,15 @@ from app.utils import config, helpers
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-s3 = boto3.client("s3", use_ssl=False)
+# s3 = boto3.client("s3", use_ssl=False)
 
-table_name = config.ddb_tbl_name
-bucketname = config.ddb_bucket_name
+# table_name = config.ddb_tbl_name
+# bucketname = config.ddb_bucket_name
 
-dynamodbClient = boto3.client("dynamodb")
-logger.debug("table is {}".format(table_name))
-dynamodbResource = boto3.resource("dynamodb")
-table = dynamodbResource.Table(table_name)
+# dynamodbClient = boto3.client("dynamodb")
+# logger.debug("table is {}".format(table_name))
+# dynamodbResource = boto3.resource("dynamodb")
+# table = dynamodbResource.Table(table_name)
 
 
 def s3Event(event, context):
@@ -65,6 +65,15 @@ def fill_table(table, table_data):
 
 
 def populate():
+    s3 = boto3.client("s3", use_ssl=False)
+
+    table_name = config.ddb_tbl_name
+    bucketname = config.ddb_bucket_name
+
+    # dynamodbClient = boto3.client("dynamodb")
+    logger.debug("table is {}".format(table_name))
+    dynamodbResource = boto3.resource("dynamodb")
+    table = dynamodbResource.Table(table_name)
     response = {"statusCode": 500, "body": "An error occured while populating table."}
     err = 1
     logger.info("\nreading data from s3")
@@ -117,31 +126,46 @@ def unzip(bucket, key):
 def get(event, context):
     logger.info(f"Incoming request is: {event}")
     # Set the default error response
-    response = generate_response(500, "An error occured while getting username.")
     ddb_resource = helpers.get_ddb_resource(context)
     table = ddb_resource.Table(config.ddb_tbl_name)
     data_id = event["pathParameters"]["username"]
 
-    data_query = table.get_item(Key={"username": data_id})
-
-    if "Item" in data_query:
-        username = data_query["Item"]
-        logger.info(f"username is: {username}")
-        response = generate_response(200, json.dumps(utility_dynamo.to_dict(username)))
+    result = table.get_item(Key={"username": data_id})
+    print(result)
+    if "Item" in result:
+        response = {
+            "statusCode": 200,
+            "body": json.dumps(result["Item"], cls=helpers.DecimalEncoder),
+        }
+    else:
+        response = {
+            "statusCode": 200,
+            "body": json.dumps(
+                "{} not in database".format(data_id), cls=helpers.DecimalEncoder
+            ),
+        }
 
     return response
 
 
 def list(event, context):
     # Set the default error response
-    response = {
-        "statusCode": 500,
-        "body": "An error occured while getting all profiles.",
-    }
-    ddb_resource = helpers.get_ddb_resource(context)
-    table = ddb_resource.Table(config.ddb_tbl_name)
-    scan_result = table.scan()
-    response = generate_response(200, scan_result["Items"])
+
+    try:
+        ddb_resource = helpers.get_ddb_resource(context)
+        table = ddb_resource.Table(config.ddb_tbl_name)
+        scan_result = table.scan()
+
+        response = {
+            "statusCode": 200,
+            "body": json.dumps(scan_result["Items"], cls=helpers.DecimalEncoder),
+        }
+    except:
+        response = {
+            "statusCode": 500,
+            "body": "An error occured while getting all profiles.",
+        }
+
     return response
 
 

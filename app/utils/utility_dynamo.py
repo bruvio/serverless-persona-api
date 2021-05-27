@@ -28,6 +28,9 @@ def to_item(raw):
 def to_dict(raw):
     if type(raw) is dict:
         resp = {}
+        import pdb
+
+        pdb.set_trace()
         for k, v in raw.items():
             if "S" in v:
                 resp[k] = v["S"]

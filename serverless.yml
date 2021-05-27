@@ -138,6 +138,8 @@ resources:
         GenerateSecret: False
         UserPoolId:
           Ref: CognitoUserPool
+        ExplicitAuthFlows:
+          - ADMIN_NO_SRP_AUTH
     ApiGatewayAuthorizer:
       DependsOn:
         - ApiGatewayRestApi
