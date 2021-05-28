@@ -200,7 +200,7 @@ custom:
           name: "bruvio"
 
         license:
-          name: "MIT"
+          name: "Apache v2.0"
       tags:
         -
           name: "Data Creation"
